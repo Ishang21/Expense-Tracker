@@ -1,13 +1,13 @@
 // The phone shortcut's two endpoints: a short list of presets ("Flat 4B · Everyone",
 // "Flat 4B · Boys Flat") and adding an equal-split expense for one of them, paid by you.
-import type { Me, QuickExpenseInput, QuickPreset } from "../shared/api";
-import { parseDateInput } from "../shared/dates";
-import { formatMoney, parseMoney } from "../shared/money";
-import { quickActionGroups } from "../shared/quick-actions";
-import type { Queryable } from "./db";
-import { HttpError } from "./errors";
-import { listSpaceGroups, loadQuickActions } from "./groups";
-import { listSpaces } from "./spaces";
+import type { Me, QuickExpenseInput, QuickPreset } from "../shared/api.js";
+import { parseDateInput } from "../shared/dates.js";
+import { formatMoney, parseMoney } from "../shared/money.js";
+import { quickActionGroups } from "../shared/quick-actions.js";
+import type { Queryable } from "./db.js";
+import { HttpError } from "./errors.js";
+import { listSpaceGroups, loadQuickActions } from "./groups.js";
+import { listSpaces } from "./spaces.js";
 
 /** Today's date in India; the server itself runs in UTC. */
 export function todayInIndia(now = new Date()): string {

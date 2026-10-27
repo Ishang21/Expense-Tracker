@@ -1,8 +1,8 @@
 import type { Context } from "hono";
 import type { z } from "zod";
-import type { Me } from "../shared/api";
-import type { Db } from "./db";
-import { badRequest, HttpError } from "./errors";
+import type { Me } from "../shared/api.js";
+import type { Db } from "./db.js";
+import { badRequest, HttpError } from "./errors.js";
 
 /** `via`: how the caller signed in. "token" (a personal token) may only use a few routes. */
 export type Env = { Variables: { user: Me; db: Db; via: "session" | "token" } };

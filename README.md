@@ -25,14 +25,14 @@ Browser (React + Vite)
   │  1. Sign in with Google or email/password (Firebase Authentication)
   │  2. fetch /api/... with "Authorization: Bearer <Firebase ID token>"
   ▼
-Netlify Function  netlify/functions/api.ts  (Hono, served at /api/*)
+Vercel Function  api/index.ts  (Hono API at /api/* and MCP at /mcp*)
   │  verifies the token, checks space membership, validates input,
   │  computes splits and balances (shared/)
   ▼
-Netlify Database (Postgres)   schema: netlify/database/migrations/
+Neon PostgreSQL   schema: database/migrations/
 ```
 
-Everything deploys as one Netlify site from one repo. Firebase is only used for sign-in.
+The frontend and backend deploy together as one Vercel project from one repo. Firebase is only used for sign-in.
 
 ## Display and navigation
 
@@ -172,8 +172,9 @@ src/                     React app (TanStack Query for server state)
   lib/                   api client, auth, queries, export, theme
 server/                  the API: routes (app.ts), auth, access checks, queries
 shared/                  used by both sides: money, dates, split + settle-up logic, API types
-netlify/functions/api.ts the Netlify Function that serves server/app.ts at /api/*
-netlify/database/migrations/  SQL migrations, applied by Netlify on every deploy
+api/index.ts             Vercel Node.js function for the API and MCP server
+database/migrations/     immutable numbered SQL migrations
+scripts/migrate-neon.ts  production migration command, run during deploy:build
 scripts/                 local dev server, seed data, Firebase → Postgres import
 tests/                   unit tests and API tests against a real Postgres engine (PGlite)
 legacy-firebase/         the retired Realtime Database rules, kept for the cut-over
@@ -225,14 +226,17 @@ The API is public on the internet. Security comes from the code:
 4. Writes are safe to retry: clients send the new row's id, so a retried request can't
    create a duplicate. Edits carry a `version`, so two people editing at once get a
    conflict instead of a silent overwrite.
-5. Netlify rate-limits the function per IP. `netlify.toml` sets a strict
-   Content-Security-Policy and the usual security headers.
+5. The public backend enforces shared per-IP limits in PostgreSQL: 300 API and 120 MCP
+   requests per minute. Counter keys hash the provider-reported IP; stale buckets are
+   cleaned opportunistically after a day. MCP internal API calls do not double-count.
+   `vercel.json` supplies Content-Security-Policy and the other security headers.
 
-The database URL is injected by Netlify at runtime and never reaches the browser.
+Database connection strings are server-only Vercel environment variables and never reach
+the browser. Do not prefix them with `VITE_`.
 
 ## Running locally
 
-Needs Node 20.12+ (22 recommended).
+Needs Node.js 24.12 or later in the 24.x LTS release line.
 
 ```bash
 npm install
@@ -276,55 +280,52 @@ Open http://localhost:5173 and sign in as `asha@example.test`, `bala@`, `chen@` 
 The password is in `scripts/seed-local.ts`. You get a recurring "Flat 4B" space, a one-time "Goa trip" and a
 "Boys Flat" group. Google sign-in opens the emulator's fake account picker.
 
-**Option B: like production** (Netlify CLI 26+ with its local database and real Firebase sign-in):
+**Option B: Neon with real Firebase sign-in** (no local Vercel login required):
+
+1. Set `DATABASE_URL` (pooled) and `DATABASE_URL_UNPOOLED` (direct) in ignored `.env.local`.
+   `DIRECT_DATABASE_URL` is also accepted for the direct connection. Keep both URLs on the
+   same Neon branch and database. Use a development branch for isolated development.
+2. Initialize the schema, then start the application:
 
 ```bash
-npm install -g netlify-cli && netlify link
-```
-```bash
-netlify database migrations apply && netlify dev
+npm run db:migrate
+npm run dev:neon
 ```
 
-Checks (the same ones Netlify runs before every deploy):
+Open http://localhost:5173. The API/MCP backend listens on loopback port 8789, uses the
+configured Neon database and verifies real Firebase ID tokens. It does not seed emulator
+accounts or run migrations automatically. The PGlite/emulator flow above stays separate.
 
-```bash
-npm run ci
-```
+For Vercel's local routing instead, link the Vercel project and run `npm run dev`.
+Use Node.js 24, as specified in `.nvmrc`.
 
 ## Deploying
 
-The default and production branch for `Ishang21/Expense-Tracker` is **`master`**.
-Push production changes to `origin/master`; GitHub CI runs on pushes to `master` and on
-pull requests. The Netlify build runs `npm run ci` (type-check, tests, build).
-Netlify then applies new migrations and publishes. A failing test or migration blocks
-the deploy.
+The frontend, API and MCP server deploy together on **Vercel**; **Neon** hosts PostgreSQL.
+Firebase is used only for Google/email sign-in. The production branch is **`master`** in
+`Ishang21/Expense-Tracker`.
 
-One-time setup:
+See [the complete Vercel + Neon setup](docs/VERCEL_NEON_SETUP.md) for project settings,
+secret environment variables, database initialization, previews, Firebase domains and smoke tests.
 
-- **Netlify repository and branch**: connect `Ishang21/Expense-Tracker` and set the
-  production branch to **`master`** in Project configuration → Developer settings →
-  Continuous deployment → Branches and deploy contexts. The connected repository and
-  production branch are Netlify project settings; changing GitHub’s default branch alone
-  does not update an existing Netlify project. Build settings remain in `netlify.toml`.
-- **Netlify**: the database already exists under the site's *Database* tab, and Netlify
-  injects its connection string itself, so there's nothing to configure. Optionally set
-  `FIREBASE_PROJECT_ID` if you ever move to another Firebase project.
-- **Firebase console → Authentication**:
-  - *Sign-in method*: enable **Google** and **Email/Password**.
-  - *Settings → Authorized domains*: add your Netlify domain, e.g. `your-site.netlify.app`.
-    Google sign-in fails on any domain not listed here, including deploy-preview URLs.
+Vercel runs `npm run deploy:build`: first TypeScript, all tests and the Vite build, then
+checksum-verified SQL migrations in one locked transaction. A failed check or migration
+fails the deployment. Plain `npm run ci` remains credential-free for GitHub Actions and
+local verification. Deployment credentials belong in Vercel, not in GitHub CI.
 
-### Moving the old data (one time)
+This setup starts with a **fresh Neon database**. Existing Firebase accounts can sign in,
+but spaces, expenses, groups and personal keys start empty. Create keys on the new domain
+and update iPhone Shortcuts and MCP connector addresses after deployment.
 
-The import only moves the old Realtime Database data into Postgres; Firebase sign-in
+### Optional legacy Firebase import
+
+This optional utility is not part of the fresh Neon deployment. Initialize the target schema
+with `npm run db:migrate` first. The import only moves old Realtime Database data into Postgres; Firebase sign-in
 stays as it is. Everyone keeps the same Firebase account, so their old expenses are
 theirs the moment they sign in.
 
 1. Freeze and export the old data: see [legacy-firebase/README.md](legacy-firebase/README.md).
-2. Get the production connection string:
-   ```bash
-   netlify database status --branch master --show-credentials
-   ```
+2. Copy the direct connection string from the Neon Console for the intended target branch.
 3. Dry run (prints the balances it would create; nothing is saved):
    ```bash
    DATABASE_URL='postgres://…' npm run import:firebase -- firebase-export.json --space-name "Flat 4B" --owner-email you@gmail.com --dry-run
@@ -371,7 +372,7 @@ Errors look like `{ "error": { "code", "message" } }`.
 | GET | `/expenses/:id` | one expense, if you're in its space |
 | GET | `/spaces/:id/expenses/page` | `?month&payer&involving&q&limit&offset`: one page plus the count, total and (with `involving`) that person's share of **every** match; filtering and paging run in the database (used by the MCP server) |
 | GET | `/spaces/:id/settlements/page` | `?month&person&limit&offset`: one page of payments plus the count and total of every match |
-| GET, POST | `/quick/options` | key or sign-in (keys also work on all other non-destructive routes): `{ labels, presets }`, each space as "Everyone" plus its quick-action groups. POST is accepted too, because a GET with a body (an easy Shortcuts mistake) fails at Netlify |
+| GET, POST | `/quick/options` | key or sign-in (keys also work on all other non-destructive routes): `{ labels, presets }`, each space as "Everyone" plus its quick-action groups. POST is accepted too; use POST if Shortcuts is configured to send a body |
 | POST | `/quick/people` | key or sign-in: `{ preset }` → plain JSON list of the space's member names, for "Who shared it?" |
 | POST | `/quick/expense` | key or sign-in: `{ preset, amount, title?, date?, requestId?, people? }` (`people`: names as a list or one per line; empty = the preset's people): equal split, paid by you, dated today (India time) by default; returns `{ message, expense }` |
 
@@ -420,7 +421,7 @@ personal key, sent as `Authorization: Bearer et_…` or as the last part of the 
 (`/mcp/et_…`) for connector forms without a header field; there the connector is added with
 "No authentication". Settings shows the **connector address** next to a new key.
 
-- Code: `server/mcp.ts` (tools), `netlify/functions/mcp.ts` (function at `/mcp` and `/mcp/*`).
+- Code: `server/mcp.ts` (tools), `api/index.ts` (Vercel function for `/api/*`, `/mcp` and `/mcp/*`).
   Tools call the API in-process with the key, so they have exactly a key's scope: no deleting,
   merging or key management.
 - Tools: `list_people` (paginated registered names/app IDs), `create_space` (monthly or one-time, registered members, caller as owner), `list_spaces`, `get_space`, `list_expenses` (month, payer, person and text filters;
@@ -436,6 +437,7 @@ The **People** sidebar section lets signed-in users browse and search the name-o
 
 ## Changing the database
 
-Add a new numbered file such as `netlify/database/migrations/0004_add_categories.sql` (0003 is `api_tokens`).
-Never edit a migration that has already been deployed. Deploy previews get their own copy
-of the database, seeded from production, so a migration can be tried there first.
+Add a new numbered file such as `database/migrations/0005_add_categories.sql` (0004 is `request_rate_limits`).
+Never edit a migration that has already been applied: checksums are verified on every run.
+Preview deployments must use a separate Neon branch with their own connection strings;
+this repository does not automatically provision database branches.

@@ -1,12 +1,11 @@
-// Applies netlify/database/migrations/*.sql in order. Netlify does this itself on deploy;
-// this is for tests and `npm run dev:local`.
+// Shared migration sources. PGlite keeps its existing local history; production uses db:migrate.
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PGlite } from "@electric-sql/pglite";
 import type { Db } from "../server/db";
 
-const DIR = fileURLToPath(new URL("../netlify/database/migrations/", import.meta.url));
+const DIR = fileURLToPath(new URL("../database/migrations/", import.meta.url));
 
 export function readMigrations(): { name: string; sql: string }[] {
   return readdirSync(DIR)

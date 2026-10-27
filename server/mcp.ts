@@ -10,12 +10,12 @@ import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
-import type { DirectoryPage, DirectoryPerson, Balances, Expense, ExpensePage, Group, Me, Member, Settlement, SettlementPage, SpaceDetail, SpaceSummary } from "../shared/api";
-import { MONTH_RE, monthLabel, shiftMonth } from "../shared/dates";
-import { formatMoney, MAX_AMOUNT_PAISE } from "../shared/money";
-import { PERCENT_TOTAL, type SplitType } from "../shared/split";
-import { quickDate, todayInIndia } from "./quick";
-import { TOKEN_PREFIX } from "./tokens";
+import type { DirectoryPage, DirectoryPerson, Balances, Expense, ExpensePage, Group, Me, Member, Settlement, SettlementPage, SpaceDetail, SpaceSummary } from "../shared/api.js";
+import { MONTH_RE, monthLabel, shiftMonth } from "../shared/dates.js";
+import { formatMoney, MAX_AMOUNT_PAISE } from "../shared/money.js";
+import { PERCENT_TOTAL, type SplitType } from "../shared/split.js";
+import { quickDate, todayInIndia } from "./quick.js";
+import { TOKEN_PREFIX } from "./tokens.js";
 
 type FetchApi = (req: Request) => Response | Promise<Response>;
 

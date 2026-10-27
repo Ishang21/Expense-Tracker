@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .netlify/
+.vercel/
 .local-db/
 *.local
 .env
@@ -9,3 +10,8 @@ dist/
 firebase-export*.json
 coverage/
 firebase-debug.log
+
+!.env.example
+
+# Local Neon project/branch context
+.neon

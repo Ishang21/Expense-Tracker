@@ -1,7 +1,7 @@
 // Verifies Firebase ID tokens without the Admin SDK: they are RS256 JWTs signed with
 // Google's published keys. See https://firebase.google.com/docs/auth/admin/verify-id-tokens
 import { createRemoteJWKSet, decodeJwt, jwtVerify, type JWTPayload } from "jose";
-import { unauthorized } from "./errors";
+import { unauthorized } from "./errors.js";
 
 export interface AuthClaims {
   uid: string;

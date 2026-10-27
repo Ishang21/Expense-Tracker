@@ -1,4 +1,4 @@
-import type { Group, SpaceQuickActions } from "./api";
+import type { Group, SpaceQuickActions } from "./api.js";
 
 /** Explicit order when configured; otherwise newest createdAt, with a stable id tie break. */
 export function quickActionGroups(groups: Group[], config: SpaceQuickActions): Group[] {

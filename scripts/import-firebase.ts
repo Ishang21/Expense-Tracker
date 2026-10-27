@@ -1,7 +1,7 @@
-// One-off: copy the old Firebase Realtime Database data into the Netlify (Postgres) database.
+// One-off: copy the old Firebase Realtime Database data into the Neon PostgreSQL database.
 //
 //   1. Firebase console → Realtime Database → Data → ⋮ → Export JSON  (saves firebase-export.json)
-//   2. netlify database status --branch <your production branch> --show-credentials   (copy the URL)
+//   2. Copy the target Neon branch direct connection string into DATABASE_URL.
 //   3. DATABASE_URL='postgres://…' npm run import:firebase -- firebase-export.json --dry-run
 //   4. Check the printed balances against the old app, then run again without --dry-run.
 //
@@ -18,7 +18,7 @@ function arg(name: string): string | undefined {
 }
 
 const file = process.argv.slice(2).find((a, i, all) => !a.startsWith("--") && !all[i - 1]?.match(/^--(space-name|owner-email)$/));
-const url = process.env.DATABASE_URL ?? process.env.NETLIFY_DB_URL;
+const url = process.env.DATABASE_URL;
 if (!file || !url) {
   console.error("Usage: DATABASE_URL='postgres://…' npm run import:firebase -- <export.json> [--space-name NAME] [--owner-email EMAIL] [--dry-run]");
   process.exit(1);

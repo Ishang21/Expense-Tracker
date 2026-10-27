@@ -3,9 +3,9 @@
 // except for anything destructive (see tokenMayCall), which needs the normal Google / email
 // sign-in.
 import { createHash, randomBytes } from "node:crypto";
-import type { ApiToken, Me } from "../shared/api";
-import { iso, num, type Queryable } from "./db";
-import { conflict, notFound } from "./errors";
+import type { ApiToken, Me } from "../shared/api.js";
+import { iso, num, type Queryable } from "./db.js";
+import { conflict, notFound } from "./errors.js";
 
 export const TOKEN_PREFIX = "et_";
 const MAX_ACTIVE = 10;

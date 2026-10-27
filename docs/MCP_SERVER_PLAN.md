@@ -1,3 +1,8 @@
+> **Historical plan:** hosting/pricing and Netlify paths below describe the previous deployment.
+> The current target is Vercel + Neon; follow [VERCEL_NEON_SETUP.md](VERCEL_NEON_SETUP.md).
+> OAuth remains unimplemented. Migration 0004 now contains request rate limits; any future
+> OAuth schema must use the next available migration number.
+
 # MCP server for Expense Tracker: plan and free hosting
 
 Status: **phase 1 built** (2026-10-21, PR #4): `/mcp` with personal keys, sent in the header **or in the address**, so Claude and ChatGPT can connect with "No authentication". OAuth (phase 2) is still a plan. Setup steps for users: [AI_APPS_SETUP.md](AI_APPS_SETUP.md).

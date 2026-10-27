@@ -1,8 +1,8 @@
 // People lists and shortcuts belonging to one space.
-import type { Group, Person, SpaceQuickActions } from "../shared/api";
-import { iso, type Queryable } from "./db";
-import { activeMemberIds, requireMember } from "./access";
-import { HttpError, notFound } from "./errors";
+import type { Group, Person, SpaceQuickActions } from "../shared/api.js";
+import { iso, type Queryable } from "./db.js";
+import { activeMemberIds, requireMember } from "./access.js";
+import { HttpError, notFound } from "./errors.js";
 
 /** Scoped groups are visible to every active space member, including nonparticipants. */
 export async function listSpaceGroups(q: Queryable, spaceId: string, userId: string): Promise<Group[]> {

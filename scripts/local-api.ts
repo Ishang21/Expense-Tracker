@@ -1,4 +1,4 @@
-// Runs the same API and MCP server as the Netlify Functions, on http://127.0.0.1:8788, against
+// Runs the same API and MCP server as the deployed Vercel function, on http://127.0.0.1:8788, against
 // a local PGlite database in .local-db/ and the Firebase Auth emulator. Used by `npm run dev:local`.
 import { PGlite } from "@electric-sql/pglite";
 import { serve } from "@hono/node-server";

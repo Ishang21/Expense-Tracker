@@ -1,6 +1,6 @@
 // How one expense is divided between people. Every result is whole paise and the shares
 // always add up to exactly the expense amount.
-import { formatMoney } from "./money";
+import { formatMoney } from "./money.js";
 
 export type SplitType = "equal" | "exact" | "percent" | "shares";
 

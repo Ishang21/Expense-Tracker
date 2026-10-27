@@ -1,9 +1,9 @@
 // Turns a verified Firebase sign-in into a row in `users`, claiming any placeholder that
 // a space or group created for the same email before the person ever signed in.
-import type { Me } from "../shared/api";
-import type { AuthClaims } from "./auth";
-import { pgCode, type Db, type Queryable } from "./db";
-import { forbidden } from "./errors";
+import type { Me } from "../shared/api.js";
+import type { AuthClaims } from "./auth.js";
+import { pgCode, type Db, type Queryable } from "./db.js";
+import { forbidden } from "./errors.js";
 
 interface UserRow {
   id: string;

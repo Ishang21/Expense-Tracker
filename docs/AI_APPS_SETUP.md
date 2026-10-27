@@ -1,22 +1,24 @@
 # Use Expense Tracker from Claude or ChatGPT
 
+Replace `your-project.vercel.app` below with your actual deployed domain.
+
 Ask an assistant, on the web or in its phone app:
 
 > "Add ₹900 dinner yesterday, split between me and Bala in Flat 4B."
 > "Who owes whom in Flat 4B this month?"
 > "Bala paid me 500 for October."
 
-The assistant uses Expense Tracker's MCP server at `https://ggn-expense-tracker.netlify.app/mcp`. It signs in with a **personal key**, the same kind the iPhone shortcut uses. It can read your spaces and add or edit expenses and payments. It **can't delete anything**, merge people or manage keys.
+The assistant uses Expense Tracker's MCP server at `https://your-project.vercel.app/mcp`. It signs in with a **personal key**, the same kind the iPhone shortcut uses. It can read your spaces and add or edit expenses and payments. It **can't delete anything**, merge people or manage keys.
 
 ---
 
 ## 1. Create a key and copy the connector address
 
-1. Open `https://ggn-expense-tracker.netlify.app` and sign in.
+1. Open `https://your-project.vercel.app` and sign in.
 2. Click your name at the bottom left → **iPhone & AI apps**.
 3. Name the key after the app, e.g. `Claude`, choose an expiry, then click **Create key**.
 4. Click **Copy connector**. The address looks like this:
-   `https://ggn-expense-tracker.netlify.app/mcp/et_…`
+   `https://your-project.vercel.app/mcp/et_…`
 
 > **Keep this address private, like a password.** Anyone who has it can add expenses as you. Use one key per app: you can then revoke one without breaking the others. The key is shown only once. If you lose it, create a new key.
 
@@ -86,7 +88,7 @@ Go to **iPhone & AI apps** in the app and click **Revoke** on that app's key. Th
 ## For developers
 
 - **Endpoint**: `POST /mcp` (key in `Authorization: Bearer et_…`) or `POST /mcp/et_…`. It uses Streamable HTTP, stateless, with JSON replies; `GET` and `DELETE` answer 405.
-- **Code**: `server/mcp.ts`; the Netlify function is `netlify/functions/mcp.ts`. Tools call the API in-process with the key, so key scope and validation are the API's own.
+- **Code**: `server/mcp.ts`; the Vercel function is `api/index.ts`. Tools call the API in-process with the key, so key scope and validation are the API's own.
 - **Local**: run `npm run dev:local` to serve `/mcp` on `http://localhost:5173` as well. Test with `npx @modelcontextprotocol/inspector`, transport Streamable HTTP.
 - **Tests**: `tests/mcp.test.ts`. To test with real Claude, use the prompts and runner in [MCP_TEST_PROMPTS.md](MCP_TEST_PROMPTS.md).
 - **Design and next steps (OAuth)**: [MCP_SERVER_PLAN.md](MCP_SERVER_PLAN.md).
