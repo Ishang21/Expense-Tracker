@@ -293,12 +293,19 @@ npm run ci
 
 ## Deploying
 
-Push to the branch Netlify builds. The build runs `npm run ci` (type-check, tests, build).
+The default and production branch for `Ishang21/Expense-Tracker` is **`master`**.
+Push production changes to `origin/master`; GitHub CI runs on pushes to `master` and on
+pull requests. The Netlify build runs `npm run ci` (type-check, tests, build).
 Netlify then applies new migrations and publishes. A failing test or migration blocks
 the deploy.
 
 One-time setup:
 
+- **Netlify repository and branch**: connect `Ishang21/Expense-Tracker` and set the
+  production branch to **`master`** in Project configuration → Developer settings →
+  Continuous deployment → Branches and deploy contexts. The connected repository and
+  production branch are Netlify project settings; changing GitHub’s default branch alone
+  does not update an existing Netlify project. Build settings remain in `netlify.toml`.
 - **Netlify**: the database already exists under the site's *Database* tab, and Netlify
   injects its connection string itself, so there's nothing to configure. Optionally set
   `FIREBASE_PROJECT_ID` if you ever move to another Firebase project.
@@ -316,7 +323,7 @@ theirs the moment they sign in.
 1. Freeze and export the old data: see [legacy-firebase/README.md](legacy-firebase/README.md).
 2. Get the production connection string:
    ```bash
-   netlify database status --branch main --show-credentials
+   netlify database status --branch master --show-credentials
    ```
 3. Dry run (prints the balances it would create; nothing is saved):
    ```bash
