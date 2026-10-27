@@ -1,7 +1,7 @@
 // Request validation. Everything from the client is untrusted.
 import { z } from "zod";
-import { MAX_AMOUNT_PAISE } from "../shared/money";
-import { isRealDate, MONTH_RE } from "../shared/dates";
+import { MAX_AMOUNT_PAISE } from "../shared/money.js";
+import { isRealDate, MONTH_RE } from "../shared/dates.js";
 
 export const id = z.uuid();
 const trimmed = (min: number, max: number) => z.string().trim().min(min).max(max);

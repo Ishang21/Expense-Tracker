@@ -1,6 +1,6 @@
 // Request and response shapes shared by the API (server/) and the app (src/).
-import type { SplitType } from "./split";
-import type { Transfer } from "./settlement";
+import type { SplitType } from "./split.js";
+import type { Transfer } from "./settlement.js";
 
 export type Role = "owner" | "member";
 /** Recurring spaces are settled month by month; one-time spaces once, over everything. */

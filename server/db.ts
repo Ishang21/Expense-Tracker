@@ -1,5 +1,5 @@
-// The narrow database interface the API uses. Production passes the pg-compatible pool from
-// @netlify/database; tests and local dev pass PGlite. Always use $1-style parameters.
+// The narrow database interface the API uses. Production passes a node-postgres pool connected to
+// Neon; tests and local dev pass PGlite. Always use $1-style parameters.
 
 export interface QueryResult<R> {
   rows: R[];

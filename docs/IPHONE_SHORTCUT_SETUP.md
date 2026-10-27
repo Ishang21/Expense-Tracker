@@ -1,9 +1,11 @@
 # iPhone shortcut: log an expense when you close an app
 
+Replace `your-project.vercel.app` below with your actual deployed domain.
+
 When you close an app such as Swiggy, a few cards pop up: **Spent something? → which space → who shared it → amount → what for**. The expense is then added to Expense Tracker.
 
-- Site: `https://ggn-expense-tracker.netlify.app`
-- Steps marked **(New)** were added so you can pick who shared the expense. They need [PR #4](https://github.com/Piyush550/Expense-tracker/pull/4) to be deployed. Until then, leave them out, and the expense is split between everyone in the choice you pick.
+- Site: `https://your-project.vercel.app`
+- Steps marked **(New)** let you pick who shared the expense and are included in this version.
 
 ## How to read the steps
 
@@ -20,7 +22,7 @@ When you close an app such as Swiggy, a few cards pop up: **Spent something? →
 
 ## Before you start: create a key
 
-1. Open `https://ggn-expense-tracker.netlify.app` and sign in.
+1. Open `https://your-project.vercel.app` and sign in.
 2. Click your name at the bottom left → **iPhone & AI apps** → **Create key** → **Copy key**.
 
 > **Important:** the key must have **no line break** after it. A line break makes every request fail with *"The network connection was lost."* When you paste it in step 1, make sure the cursor ends right after the last character, with nothing on the next line.
@@ -45,7 +47,7 @@ Open **Shortcuts** → **Shortcuts** tab → **+** (top right). Tap the title at
 
 ### 3. Get Contents of URL: load your spaces
 - Search `Get Contents of URL`. It must sit below **End Menu**.
-- **URL**: type `https://ggn-expense-tracker.netlify.app/api/quick/options`
+- **URL**: type `https://your-project.vercel.app/api/quick/options`
 - **›** → **Method**: leave **GET**.
 - **Headers** → **Add new header**:
   - Key: type `Authorization`
@@ -64,7 +66,7 @@ Open **Shortcuts** → **Shortcuts** tab → **+** (top right). Tap the title at
 
 ### 6. Get Contents of URL: load the people **(New)**
 - Search `Get Contents of URL`.
-- **URL**: type `https://ggn-expense-tracker.netlify.app/api/quick/people`
+- **URL**: type `https://your-project.vercel.app/api/quick/people`
 - **›** → **Method**: **POST**.
 - **Headers** → **Add new header**: Key `Authorization`; Value `Bearer ` + the variable **Text** (step 1), exactly as in step 3.
 - **Request Body**: **JSON** → **Add new field** → **Text**:
@@ -94,7 +96,7 @@ Open **Shortcuts** → **Shortcuts** tab → **+** (top right). Tap the title at
 
 ### 10. Get Contents of URL: save the expense
 - Search `Get Contents of URL`.
-- **URL**: type `https://ggn-expense-tracker.netlify.app/api/quick/expense`
+- **URL**: type `https://your-project.vercel.app/api/quick/expense`
 - **›** → **Method**: **POST** (not GET, or you'll get "No such API route").
 - **Headers** → **Add new header**: Key `Authorization`; Value `Bearer ` + the variable **Text** (step 1).
 - **Request Body**: **JSON**, then add these fields (**Add new field**, pick the type first):
@@ -118,7 +120,7 @@ Open **Shortcuts** → **Shortcuts** tab → **+** (top right). Tap the title at
 - Message: delete any default text, then insert the variable **Dictionary Value** (step 11).
 - Optional: **›** → **Title**: type `Expense Tracker`.
 
-**Test:** tap **▶**. The first time, iOS asks to connect to `ggn-expense-tracker.netlify.app`; tap **Always Allow**. You should end with *"Added ₹… to … · split N ways"*.
+**Test:** tap **▶**. The first time, iOS asks to connect to `your-project.vercel.app`; tap **Always Allow**. You should end with *"Added ₹… to … · split N ways"*.
 
 ---
 

@@ -1,10 +1,10 @@
 // Balances, computed from the stored shares and payments. A recurring space is settled
 // month by month, so balances can be limited to one month: that month's expenses plus the
 // payments recorded against it (settlements.period).
-import type { Balances, MemberBalance, MonthSummary } from "../shared/api";
-import { monthRange } from "../shared/dates";
-import { pairwiseDebts, simplifyDebts, type Debt } from "../shared/settlement";
-import { num, type Queryable } from "./db";
+import type { Balances, MemberBalance, MonthSummary } from "../shared/api.js";
+import { monthRange } from "../shared/dates.js";
+import { pairwiseDebts, simplifyDebts, type Debt } from "../shared/settlement.js";
+import { num, type Queryable } from "./db.js";
 
 export async function spaceBalances(q: Queryable, spaceId: string, simplify: boolean, month?: string): Promise<Balances> {
   const range = month ? monthRange(month) : null;

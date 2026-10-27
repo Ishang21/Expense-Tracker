@@ -1,7 +1,7 @@
-import type { Member, Role, SpaceDetail, SpaceKind, SpaceSummary } from "../shared/api";
-import { num, type Queryable } from "./db";
-import { conflict, notFound } from "./errors";
-import { userIdForEmail } from "./people";
+import type { Member, Role, SpaceDetail, SpaceKind, SpaceSummary } from "../shared/api.js";
+import { num, type Queryable } from "./db.js";
+import { conflict, notFound } from "./errors.js";
+import { userIdForEmail } from "./people.js";
 
 export async function listSpaces(q: Queryable, userId: string): Promise<SpaceSummary[]> {
   const { rows } = await q.query<{ id: string; name: string; kind: SpaceKind; role: Role; member_count: unknown; balance: unknown }>(

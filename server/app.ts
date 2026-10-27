@@ -3,22 +3,22 @@
 // membership before touching data.
 import { Hono, type Next } from "hono";
 import { bodyLimit } from "hono/body-limit";
-import type { ApiToken, Balances, Expense, ExpensePage, Me, MonthSummary, NewApiToken, Person, QuickExpenseResult, QuickOptions, Settlement, SettlementPage, SpaceDetail } from "../shared/api";
-import { activeMemberIds, assertUuid, requireMember, requireOwner } from "./access";
-import type { VerifyToken } from "./auth";
-import { pgCode, type Db, type Queryable } from "./db";
-import { conflict, forbidden, HttpError, notFound, unauthorized } from "./errors";
-import { findExpense, getSettlement, listExpenses, listSettlements, pageExpenses, pageSettlements, replaceShares, sharesFor } from "./expenses";
-import { createSpaceGroup, findSpaceGroup, listSpaceGroups, loadQuickActions, saveQuickActions, setSpaceGroupMembers } from "./groups";
-import { addEmailToSpace, addToSpace, ensureSpaceKeepsOwner, listSpaces, loadSpace } from "./spaces";
-import { type Ctx, type Env, parse, readBody } from "./http";
-import { memberNet, monthlySummary, spaceBalances } from "./ledger";
-import { listContacts, pageRegisteredDirectory, registeredDirectory, requireContacts, requireRegistered } from "./people";
-import * as s from "./schemas";
-import type { CreateExpense } from "./schemas";
-import { mergeUsers, resolveUser } from "./users";
-import { findPreset, peopleChoices, pickedPeople, quickAmount, quickDate, quickMessage, quickPresets } from "./quick";
-import { createToken, deleteToken, listTokens, regenerateToken, revokeToken, TOKEN_PREFIX, tokenMayCall, updateToken, userForToken } from "./tokens";
+import type { ApiToken, Balances, Expense, ExpensePage, Me, MonthSummary, NewApiToken, Person, QuickExpenseResult, QuickOptions, Settlement, SettlementPage, SpaceDetail } from "../shared/api.js";
+import { activeMemberIds, assertUuid, requireMember, requireOwner } from "./access.js";
+import type { VerifyToken } from "./auth.js";
+import { pgCode, type Db, type Queryable } from "./db.js";
+import { conflict, forbidden, HttpError, notFound, unauthorized } from "./errors.js";
+import { findExpense, getSettlement, listExpenses, listSettlements, pageExpenses, pageSettlements, replaceShares, sharesFor } from "./expenses.js";
+import { createSpaceGroup, findSpaceGroup, listSpaceGroups, loadQuickActions, saveQuickActions, setSpaceGroupMembers } from "./groups.js";
+import { addEmailToSpace, addToSpace, ensureSpaceKeepsOwner, listSpaces, loadSpace } from "./spaces.js";
+import { type Ctx, type Env, parse, readBody } from "./http.js";
+import { memberNet, monthlySummary, spaceBalances } from "./ledger.js";
+import { listContacts, pageRegisteredDirectory, registeredDirectory, requireContacts, requireRegistered } from "./people.js";
+import * as s from "./schemas.js";
+import type { CreateExpense } from "./schemas.js";
+import { mergeUsers, resolveUser } from "./users.js";
+import { findPreset, peopleChoices, pickedPeople, quickAmount, quickDate, quickMessage, quickPresets } from "./quick.js";
+import { createToken, deleteToken, listTokens, regenerateToken, revokeToken, TOKEN_PREFIX, tokenMayCall, updateToken, userForToken } from "./tokens.js";
 import { randomUUID } from "node:crypto";
 
 export interface AppDeps {
@@ -120,8 +120,8 @@ export function createApp({ db: getDb, verifyToken }: AppDeps) {
   });
 
   // ── Phone shortcut: presets and quick equal-split add ─────────────────────────────────
-  // GET or POST: a GET that carries a body (an easy Shortcuts slip) crashes in Netlify's
-  // runtime before reaching this code, while a POST with or without a body always works.
+  // Accept POST too: Fetch-based adapters reject GET requests carrying a body, which
+  // is easy to configure accidentally in Shortcuts.
   const quickOptions = async (c: Ctx) => {
     const presets = await quickPresets(c.var.db, c.var.user);
     return c.json<QuickOptions>({ labels: presets.map((p) => p.label), presets });

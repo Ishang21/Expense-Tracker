@@ -1,16 +1,22 @@
-// The API as deployed: Netlify Database and Firebase sign-in. Shared by the /api and /mcp functions.
-import { getDatabase } from "@netlify/database";
-import { firebaseConfig } from "../shared/config";
-import { createApp } from "./app";
-import { firebaseVerifier } from "./auth";
-import { dbFromPool, type Db } from "./db";
+// Vercel's Node.js functions use Neon PostgreSQL; Firebase remains sign-in only.
+import { Pool } from "pg";
+import { attachDatabasePool } from "@vercel/functions";
+import { firebaseConfig } from "../shared/config.js";
+import { createApp } from "./app.js";
+import { firebaseVerifier } from "./auth.js";
+import { dbFromPool, type Db } from "./db.js";
 
-// Created on first use and reused while the function instance stays warm.
 let db: Db | undefined;
 
+export function productionDb(): Db {
+  if (db) return db;
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) throw new Error("DATABASE_URL is required for the deployed backend.");
+  const pool = new Pool({ connectionString, max: 5, idleTimeoutMillis: 5000, connectionTimeoutMillis: 10000 });
+  attachDatabasePool(pool);
+  return (db = dbFromPool(pool));
+}
+
 export function productionApp() {
-  return createApp({
-    db: () => (db ??= dbFromPool(getDatabase().pool)),
-    verifyToken: firebaseVerifier(process.env.FIREBASE_PROJECT_ID || firebaseConfig.projectId),
-  });
+  return createApp({ db: productionDb, verifyToken: firebaseVerifier(process.env.FIREBASE_PROJECT_ID || firebaseConfig.projectId) });
 }

@@ -1,8 +1,8 @@
-import type { Expense, ExpensePage, Settlement, SettlementPage } from "../shared/api";
-import { monthRange } from "../shared/dates";
-import { computeShares, SplitError, type Share, type SplitInput, type SplitType } from "../shared/split";
-import { iso, num, type Queryable } from "./db";
-import { HttpError } from "./errors";
+import type { Expense, ExpensePage, Settlement, SettlementPage } from "../shared/api.js";
+import { monthRange } from "../shared/dates.js";
+import { computeShares, SplitError, type Share, type SplitInput, type SplitType } from "../shared/split.js";
+import { iso, num, type Queryable } from "./db.js";
+import { HttpError } from "./errors.js";
 
 const EXPENSE_COLUMNS = `e.id, e.space_id, e.description, e.amount_paise, e.payer_id, e.split_type,
   e.spent_on::text AS spent_on, e.remarks, e.version, e.created_by, e.created_at, e.updated_by, e.updated_at,

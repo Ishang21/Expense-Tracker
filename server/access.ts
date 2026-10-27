@@ -1,9 +1,9 @@
 // Authorization. Every space-scoped query goes through requireMember first, and a space the
 // caller is not in is reported as "not found" so its existence is not revealed.
-import type { Role } from "../shared/api";
-import type { Queryable } from "./db";
-import { forbidden, notFound } from "./errors";
-import { id as uuidSchema } from "./schemas";
+import type { Role } from "../shared/api.js";
+import type { Queryable } from "./db.js";
+import { forbidden, notFound } from "./errors.js";
+import { id as uuidSchema } from "./schemas.js";
 
 export function assertUuid(value: string, what: string): string {
   if (!uuidSchema.safeParse(value).success) throw notFound(what);

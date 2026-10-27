@@ -1,7 +1,7 @@
 // People: existing contacts, a name-only registered directory, and named email invitations.
-import type { DirectoryPage, Person } from "../shared/api";
-import { num, type Queryable } from "./db";
-import { notFound } from "./errors";
+import type { DirectoryPage, Person } from "../shared/api.js";
+import { num, type Queryable } from "./db.js";
+import { notFound } from "./errors.js";
 
 export async function userIdForEmail(tx: Queryable, email: string, name?: string): Promise<string> {
   const found = await tx.query<{ id: string }>("SELECT id FROM users WHERE email = $1", [email]);
